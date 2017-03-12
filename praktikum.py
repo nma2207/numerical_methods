@@ -55,7 +55,7 @@ def computing_real_values(a, b, n):
 def main():
     a=0
     b=5
-    n=50
+    n=500
     x1,results1 = computing(a, b, n)
     x2, results2= computing_real_values(a, b, n)
     for i in range(len(x1)):
