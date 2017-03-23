@@ -1,14 +1,15 @@
 import math
 import numpy as np
 from matplotlib import pyplot as plt
+
 def f1(x, y):
-    return y[1]
+    return (y[1])
 
 def f2(x, y):
     return -2.*y[0]*y[0]*(1-4*x*x*y[0])
 
 def y1(x):
-    return 1./(1+x*x)
+    return 1./(((1+x*x)))
 
 def y2(x):
     return -2.*x/((1+x*x)**2)
@@ -20,19 +21,25 @@ def computing(a, b, n):
     x_arr=[]
     result=[]
     h=float(b-a)/n
-    y=np.array([y1(a), y2(a)])
+    y=(np.array([y1(a), y2(a)]))
     result.append(y)
     x_arr.append(a)
     for i in range(n):
 
-        x=a+i*h
-        k1=f(x, y)
-        k2=f(x+h/4, y+h*k1/4)
-        k3=f(x+h/2, y+h*k2/2)
-        k4=f(x+h, y+h*k1-2*h*k2+2*h*k3)
-
-        y=y+h*(k1+4*k3+k4)/6.
+        x=(a+i*h)
+        # k1=f(x, y)
+        # k2=f(x+h/4, y+h*k1/4)
+        # k3=f(x+h/2, y+h*k2/2)
+        # k4=f(x+h, y+h*k1-2*h*k2+2*h*k3)
+        #
+        # y=y+h*(k1+4*k3+k4)/6.
         #y=y+h/6.*(k1+2*k2+2*k3+k4)
+
+        k1=f(x,y)
+        k2=f(x+h/2., y+h*k1/2.)
+        k3=f(x+h/2., y+h*k2/2.)
+        k4=f(x+h, y+h*k3)
+        y=y+h*(k1+2*k2+2*k3+k4)/6.
         result.append(y)
         x_arr.append(x+h)
     return np.array(x_arr), np.array(result)
@@ -55,12 +62,11 @@ def computing_real_values(a, b, n):
 def main():
     a=0
     b=5
-    n=500
+    n=100
     x1,results1 = computing(a, b, n)
     x2, results2= computing_real_values(a, b, n)
     for i in range(len(x1)):
-        print 'x={0:.3f}       y1={1:.10f}     y1_r={2:.10f}   dif={3:.10f}             y2={4:.10f}     y2_r={5:.10f}   dif={6:.10f}'\
-            .format(x1[i], results1[i,0], results2[i,0], results1[i,0]-results2[i,0], results1[i,1], results2[i,1], results1[i,1]-results2[i,1])
+        print 'x={0:.3f}       y1={1:.15f}     y1_r={2:.15f}   dif={3:.15f}             y2={4:.15f}     y2_r={5:.15f}   dif={6:.15f}'.format(x1[i], results1[i,0], results2[i,0], results1[i,0]-results2[i,0], results1[i,1], results2[i,1], results1[i,1]-results2[i,1])
     plt.figure()
     plt.subplot(1, 2, 1)
     plt.title('function #1')
