@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 eps = 1e-06
-int_eps = 1e-04
+int_eps = 1e-08
 
 
 def f(x, eps):
@@ -15,7 +15,7 @@ def f(x, eps):
         a *= q
         sum += a
         n += 1
-    return sum
+    return sum, n
 
 
 def l(x_arr, x, k):
@@ -60,15 +60,16 @@ def chebishev_polynom(a, b, n):
 
 
 def integral_left_rect(a, b):
-    N = 10
+    N = 1
     s = 0
     s_prev = 0
     while True:
         s_prev = s
+        s=0
         h = float(b - a) / N
         for i in range(N):
-            s += c(a + i * h)
-        s *= h
+            s += c(a + i * h)*h
+        #s *= h
         if (math.fabs(s - s_prev) < int_eps):
             break
         else:
@@ -77,11 +78,12 @@ def integral_left_rect(a, b):
 
 
 def integral_trapezoid(a, b):
-    N = 10
+    N = 1
     s = 0
     s_prev = 0
     while True:
         s_prev = s
+        s=0
         h = float(b - a) / N
         for i in range(N):
             s += (c(a + i * h) + c(a + (i + 1) * h))
@@ -94,14 +96,15 @@ def integral_trapezoid(a, b):
 
 
 def integral_simpson(a, b):
-    N = 10
+    N = 1
     s = 0
     s_prev = 0
     while True:
         s_prev = s
+        s=0
         h = float(b - a) / N
         for i in range(N):
-            s += (c(a + i * h) + c(a + (i + 0.5) * h) + c(a + (i + 1) * h))
+            s += (c(a + i * h) + 4*c(a + (i + 0.5) * h) + c(a + (i + 1) * h))
         s *= (h / 6.)
         if (math.fabs(s - s_prev) < int_eps):
             break
@@ -188,7 +191,43 @@ def main():
     # plt.figure()
     # plt.plot(x2, L_arr)
     # plt.show()
+def test():
+    a=0
+    b=1.5
+    n=10
+    h=float(b-a)/n
+    x_arr=[]
+    s_arr=[]
+    for i in range(n+1):
+        x=a+i*h
+        sum,k=f(x,eps)
+        print '{0:.2f}\t{1:.10f}\t{2:.0f}'.format(x,sum,k)
+        x_arr.append(x)
+        s_arr.append(sum)
+    x_arr=np.array(x_arr)
+    s_arr=np.array(s_arr)
+    plt.figure()
+    plt.plot(x_arr, s_arr)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
 
+def test_int():
+    a = 0
+    b = 1.5
+    n=10
+    h=float(b-a)/n
+    for i in range(n+1):
+        x=a+i*h
+        left=integral_left_rect(0,x)
+        trap=integral_trapezoid(0,x)
+        simp=integral_simpson(0,x)
+        f_r=f(x, eps)
+        print 'x=',x
+        print 'Left rect: ', left
+        print 'Trapezoid: ', trap
+        print 'Simpson:   ',simp
+        print 'real val:  ',f_r
 
 if __name__ == "__main__":
-    main()
+    test_int()
