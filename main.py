@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 eps = 1e-06
-int_eps = 1e-08
+int_eps = 1e-04
 
 
 def f(x, eps):
@@ -15,7 +15,7 @@ def f(x, eps):
         a *= q
         sum += a
         n += 1
-    return sum, n
+    return sum
 
 
 def l(x_arr, x, k):
@@ -73,7 +73,7 @@ def integral_left_rect(a, b):
         if (math.fabs(s - s_prev) < int_eps):
             break
         else:
-            N *= 2
+            N +=1
     return s, N
 
 
@@ -91,7 +91,7 @@ def integral_trapezoid(a, b):
         if (math.fabs(s - s_prev) < int_eps):
             break
         else:
-            N *= 2
+            N +=1
     return s, N
 
 
@@ -109,7 +109,7 @@ def integral_simpson(a, b):
         if (math.fabs(s - s_prev) < int_eps):
             break
         else:
-            N *= 2
+            N +=1
     return s, N
 
 
@@ -117,12 +117,12 @@ def main():
     a = 0
     b = 1.5
     top = 100
-    bot = 15
-    step = 10
+    bot = 50
+    step = 5
     max_errors1 = []
     h_arr1 = []
     for n1 in range(bot, top, step):
-        print ('n1 =', n1)
+        print 'n1 =', n1
         x1 = []
         h1 = float(b - a) / n1
         for i in range(n1):
@@ -136,6 +136,7 @@ def main():
             L_val = L(x_arr, i)
             c_val = c(i)
             errors.append(math.fabs(L_val - c_val))
+            print'{0:.3f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val-c_val))
         max_errors1.append(np.max(np.array(errors)))
         h_arr1.append(h1)
 
@@ -145,7 +146,7 @@ def main():
     max_errors2 = []
     h_arr2 = []
     for n2 in range(bot, top, step):
-        print('n2 = ', n2)
+        print'n2 = ', n2
         h2 = float(b - a) / n2
         x2 = []
         for i in range(n2):
@@ -156,6 +157,7 @@ def main():
             l_val = L(x_cheb, i)
             c_val = c(i)
             errors.append(math.fabs(l_val - c_val))
+            print'{0:.3f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val - c_val))
         max_errors2.append(np.max(np.array(errors)))
         h_arr2.append(h2)
 
@@ -230,4 +232,4 @@ def test_int():
         print 'real val:  ',f_r
 
 if __name__ == "__main__":
-    test_int()
+    main()

@@ -3,23 +3,26 @@ import numpy as np
 from matplotlib import pyplot as plt
 import decimal as dec
 
-toch=20
+toch=100
 
 def f1(x, y):
+    #return y[0]/(2+2*x)-2*x*y[1]
     #return (y[1])
     return y[1]
 
 def f2(x, y):
-    #return -2*y[0]*y[0]*(1-4*x*x*y[0])
-    return -y[0]
+    #return y[1]/(2+2*x)+2*x*y[0]
+    return -2*y[0]*y[0]*(1-4*x*x*y[0])
+    #return -y[0]
 
 def y1(x):
-    #return 1/((1+x*x))
-    return dec.Decimal.from_float(math.sin(x))
+    return 1/((1+x*x))
+    #return dec.Decimal.from_float(math.cos(x * x) * (math.sqrt(1 + x)))
 
 def y2(x):
-    #return -2*x/((1+x*x)**2)
-    return dec.Decimal.from_float(math.cos(x))
+    return -2*x/((1+x*x)*(1+x*x))
+    #return dec.Decimal.from_float(math.sin(x*x)*(math.sqrt(1+x)))
+    #return dec.Decimal.from_float(math.sin(x * x)) * ((1 + x) ** dec.Decimal(1)/2)
 
 def f(x, y):
     return np.array([f1(x, y), f2(x, y)])
@@ -79,8 +82,8 @@ def main():
     print y
     print dec.Decimal(1)/dec.Decimal(7)
     a=0
-    b=20
-    n=200
+    b=5
+    n=50
 
     x1,results1 = computing(a, b, n)
     x2, results2= computing_real_values(a, b, n)
