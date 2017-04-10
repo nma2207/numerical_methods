@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 eps = 1e-06
-int_eps = 1e-04
+int_eps = 1e-30
 
 
 def f(x, eps):
@@ -35,7 +35,8 @@ def l(x_arr, x, k):
 
 
 def c(x):
-    return math.cos(math.pi * x * x / 2)
+    #return math.cos(math.pi * x * x / 2)
+    return math.cos(math.pi*x*x/2)
 
 
 def L(x_arr, x):
@@ -59,7 +60,7 @@ def chebishev_polynom(a, b, n):
     return x_arr
 
 
-def integral_left_rect(a, b):
+def integral_left_rect(a, b, x):
     N = 1
     s = 0
     s_prev = 0
@@ -68,16 +69,16 @@ def integral_left_rect(a, b):
         s=0
         h = float(b - a) / N
         for i in range(N):
-            s += c(a + i * h)*h
+            s += c(x, a + i * h)*h
         #s *= h
         if (math.fabs(s - s_prev) < int_eps):
             break
         else:
-            N +=1
+            N *=2
     return s, N
 
 
-def integral_trapezoid(a, b):
+def integral_trapezoid(a, b, x):
     N = 1
     s = 0
     s_prev = 0
@@ -86,16 +87,16 @@ def integral_trapezoid(a, b):
         s=0
         h = float(b - a) / N
         for i in range(N):
-            s += (c(a + i * h) + c(a + (i + 1) * h))
+            s += (c(x, a + i * h) + c(x, a + (i + 1) * h))
         s *= (h / 2.)
         if (math.fabs(s - s_prev) < int_eps):
             break
         else:
-            N +=1
+            N *=2
     return s, N
 
 
-def integral_simpson(a, b):
+def integral_simpson(a, b, x):
     N = 1
     s = 0
     s_prev = 0
@@ -104,21 +105,21 @@ def integral_simpson(a, b):
         s=0
         h = float(b - a) / N
         for i in range(N):
-            s += (c(a + i * h) + 4*c(a + (i + 0.5) * h) + c(a + (i + 1) * h))
+            s += (c(x, a + i * h) + 4*c(x, a + (i + 0.5) * h) + c(x, a + (i + 1) * h))
         s *= (h / 6.)
         if (math.fabs(s - s_prev) < int_eps):
             break
         else:
-            N +=1
+            N *=2
     return s, N
 
 
 def main():
     a = 0
     b = 1.5
-    top = 100
-    bot = 50
-    step = 5
+    top = 62
+    bot = 48
+    step = 1
     max_errors1 = []
     h_arr1 = []
     for n1 in range(bot, top, step):
@@ -216,14 +217,14 @@ def test():
 
 def test_int():
     a = 0
-    b = 1.5
+    b = 3
     n=10
     h=float(b-a)/n
     for i in range(n+1):
         x=a+i*h
-        left=integral_left_rect(0,x)
-        trap=integral_trapezoid(0,x)
-        simp=integral_simpson(0,x)
+        left=integral_left_rect(0,math.pi,x)
+        trap=integral_trapezoid(0,math.pi,x)
+        simp=integral_simpson(0,math.pi,x)
         f_r=f(x, eps)
         print 'x=',x
         print 'Left rect: ', left
@@ -231,5 +232,33 @@ def test_int():
         print 'Simpson:   ',simp
         print 'real val:  ',f_r
 
+def test_error():
+    a=0
+    b=1.5
+    n=10
+    h=float(b-a)/n
+    x1 = []
+    #h1 = float(b - a) / n1
+    # for i in range(n):
+    #     x1.append(a + h / 2 + i * h)
+    x1=chebishev_polynom(a,b,n)
+    x_arr = []
+    for i in range(n + 1):
+        x_arr.append(a + i * h)
+    errors1 = []
+    for i in x1:
+        L_val = L(x_arr, i)
+        c_val = c(i)
+        errors1.append(math.fabs(L_val - c_val))
+
+    errors=np.array(errors1)
+    plt.plot(x1,errors1)
+    plt.xlabel('x')
+    plt.ylabel('error')
+    plt.show()
+        #print'{0:.3f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val-c_val))
+    #max_errors1.append(np.max(np.array(errors)))
+    #h_arr1.append(h1)
+
 if __name__ == "__main__":
-    main()
+    test_error()
