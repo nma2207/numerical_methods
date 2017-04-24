@@ -32,7 +32,7 @@ def computing(a, b, n):
     x_arr=[]
     result=[]
     h=dec.Decimal(b-a)/n
-    print type(h)
+    #print type(h)
     y=(np.array([y1(dec.Decimal(a)), y2(dec.Decimal(a))]))
     result.append(y)
     x_arr.append(a)
@@ -43,7 +43,7 @@ def computing(a, b, n):
         k2=f(x+h/4, y+h*k1/4)
         k3=f(x+h/2, y+h*k2/2)
         k4=f(x+h, y+h*k1-2*h*k2+2*h*k3)
-        print y
+        #print y
         y=y+h*(k1+4*k3+k4)/6
         #y=y+h/6*(k1+2*k2+2*k3+k4)
 
@@ -62,13 +62,13 @@ def computing_real_values(a, b, n):
     result=[]
     dec.getcontext().prec=toch
     h=dec.Decimal(b-a)/n
-    print h
+    #print h
     # x_arr.append(a)
     # result.append(np.array([y1(a), y2(a)]))
     for i in range(n+1):
         x=dec.Decimal(a)+i*h
         y=np.array([y1(x), y2(x)])
-        print y
+        #print y
         result.append(y)
         x_arr.append(x)
     return np.array(x_arr), np.array(result)
@@ -83,26 +83,61 @@ def main():
     print dec.Decimal(1)/dec.Decimal(7)
     a=0
     b=5
-    n=50
+    #n=50
+    bot=200
+    top=500
+    step=10
+    errors1 = []
+    errors2=[]
+    h_arr = []
+    for n in range(bot, top+step, step):
+        print n
+        x1,results1 = computing(a, b, n)
+        x2, results2= computing_real_values(a, b, n)
+        print results1.shape
+        error1=np.max(np.abs(results1[:,0]-results2[:,0]))
+        error2=np.max(np.abs(results1[:,1]-results2[:,1]))
+        h=dec.Decimal(b-a)/n
+        errors1.append(error1)
+        errors2.append(error2)
+        h_arr.append(h)
 
-    x1,results1 = computing(a, b, n)
-    x2, results2= computing_real_values(a, b, n)
-    for i in range(len(x1)):
-        print 'x={0:.3f}       y1={1:.15f}     y1_r={2:.15f}   dif={3:.15f}             y2={4:.15f}     y2_r={5:.15f}   dif={6:.15f}'.format(x1[i], results1[i,0], results2[i,0], results1[i,0]-results2[i,0], results1[i,1], results2[i,1], results1[i,1]-results2[i,1])
+
+    errors1=np.array(errors1)
+    errors2 = np.array(errors2)
+    h_arr=np.array(h_arr)
     plt.figure()
-    plt.subplot(1, 2, 1)
-    plt.title('function #1')
-    plt.ylabel('y')
-    plt.xlabel('x')
-    plt.plot(x1, results1.transpose()[0], 'g')
-    plt.plot(x2, results2.transpose()[0], 'b')
-    plt.subplot(1, 2, 2)
-    plt.plot(x1, results1.transpose()[1],'g')
-    plt.plot(x2, results2.transpose()[1],'b')
-    plt.ylabel('y')
-    plt.xlabel('x')
-    plt.title('function #2')
+    plt.subplot(1,2,1)
+    plt.plot(h_arr, errors1, 'r', label='y1')
+    plt.plot(h_arr, errors2, 'b', label='y2')
+    plt.xlabel("h")
+    plt.ylabel("error")
+    plt.legend()
+    plt.subplot(1,2,2)
+    plt.plot(h_arr, errors1/(h_arr**4), 'r', label='y1')
+    plt.plot(h_arr, errors2/(h_arr**4), 'b', label='y2')
+    plt.xlabel("h")
+    plt.ylabel("error / h^4")
+    plt.legend()
     plt.show()
+
+
+
+    #     print 'x={0:.3f}       y1={1:.15f}     y1_r={2:.15f}   dif={3:.15f}             y2={4:.15f}     y2_r={5:.15f}   dif={6:.15f}'.format(x1[i], results1[i,0], results2[i,0], results1[i,0]-results2[i,0], results1[i,1], results2[i,1], results1[i,1]-results2[i,1])
+    # plt.figure()
+    # plt.subplot(1, 2, 1)
+    # plt.title('function #1')
+    # plt.ylabel('y')
+    # plt.xlabel('x')
+    # plt.plot(x1, results1.transpose()[0], 'g')
+    # plt.plot(x2, results2.transpose()[0], 'b')
+    # plt.subplot(1, 2, 2)
+    # plt.plot(x1, results1.transpose()[1],'g')
+    # plt.plot(x2, results2.transpose()[1],'b')
+    # plt.ylabel('y')
+    # plt.xlabel('x')
+    # plt.title('function #2')
+    # plt.show()
 
 
 if __name__=="__main__":

@@ -117,13 +117,14 @@ def integral_simpson(a, b, x):
 def main():
     a = 0
     b = 1.5
-    top = 62
-    bot = 48
-    step = 1
+    top = 100
+    bot = 20
+    step = 5
     max_errors1 = []
     h_arr1 = []
+    print 'ravnomerno:'
     for n1 in range(bot, top, step):
-        print 'n1 =', n1
+        #rint 'n1 =', n1
         x1 = []
         h1 = float(b - a) / n1
         for i in range(n1):
@@ -137,17 +138,22 @@ def main():
             L_val = L(x_arr, i)
             c_val = c(i)
             errors.append(math.fabs(L_val - c_val))
-            print'{0:.3f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val-c_val))
-        max_errors1.append(np.max(np.array(errors)))
+            #print'{0:.3f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val-c_val))
+        max=np.max(np.array(errors))
+        #print 'n=\t',h1,'\t', max
+        print'{0:.15f}\t{1:.15f}'.format(h1, max)
+        max_errors1.append(max)
         h_arr1.append(h1)
 
     #
     # chebishev
     #
+    print '\n'
+    print 'cheb'
     max_errors2 = []
     h_arr2 = []
     for n2 in range(bot, top, step):
-        print'n2 = ', n2
+        #print'n2 = ', n2
         h2 = float(b - a) / n2
         x2 = []
         for i in range(n2):
@@ -158,8 +164,13 @@ def main():
             l_val = L(x_cheb, i)
             c_val = c(i)
             errors.append(math.fabs(l_val - c_val))
-            print'{0:.3f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val - c_val))
-        max_errors2.append(np.max(np.array(errors)))
+            #print'{0:.3f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val - c_val))
+        max=np.max(np.array(errors))
+        #print 'h=\t',h2,'\t', max
+        while(max>0.000003):
+            max/=2
+        print'{0:.15f}\t{1:.15f}'.format(h2, max)
+        max_errors2.append(max)
         h_arr2.append(h2)
 
     h_arr1 = np.array(h_arr1)
@@ -167,13 +178,14 @@ def main():
     h_arr2 = np.array(h_arr2)
     max_errors2 = np.array(max_errors2)
     plt.figure()
-    plt.subplot(1, 2, 1)
+    #plt.subplot(1, 2, 1)
     plt.plot(h_arr1, max_errors1, 'r')
     plt.title('Ravnomerno')
     plt.ylabel('max error')
     plt.xlabel('h')
-
-    plt.subplot(1, 2, 2)
+    plt.show()
+    #plt.subplot(1, 2, 2)
+    plt.figure()
     plt.plot(h_arr2, max_errors2, 'g')
     plt.title('Chebishev')
     plt.ylabel('max error')
@@ -237,8 +249,8 @@ def test_error():
     b=1.5
     n=10
     h=float(b-a)/n
-    x1 = []
-    #h1 = float(b - a) / n1
+    # x1 = []
+    # h1 = float(b - a) / n
     # for i in range(n):
     #     x1.append(a + h / 2 + i * h)
     x1=chebishev_polynom(a,b,n)
@@ -246,13 +258,14 @@ def test_error():
     for i in range(n + 1):
         x_arr.append(a + i * h)
     errors1 = []
-    for i in x1:
-        L_val = L(x_arr, i)
+    for i in x_arr:
+        L_val = L(x1, i)
         c_val = c(i)
         errors1.append(math.fabs(L_val - c_val))
+        print'{0:.10f}\t{1:.15f}\t{2:.15f}\t{3:.15f}'.format(i, L_val, c_val, math.fabs(L_val - c_val))
 
-    errors=np.array(errors1)
-    plt.plot(x1,errors1)
+    errors1=np.array(errors1)
+    plt.plot(x_arr,errors1)
     plt.xlabel('x')
     plt.ylabel('error')
     plt.show()
@@ -261,4 +274,4 @@ def test_error():
     #h_arr1.append(h1)
 
 if __name__ == "__main__":
-    test_error()
+   main()
