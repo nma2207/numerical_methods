@@ -1,6 +1,6 @@
 #coding:utf-8
 import numpy as np
-
+import math
 
 def p(x):
     return 1+x
@@ -9,27 +9,27 @@ def u(x):
 def g(x):
     return x+1
 def F(x):
-    return -6*x-3*x*x-16*x*x*x
+    return -6*x+3*x*x+16*x*x*x+u(x)*g(x)
 
 #
 #Генерируем заданную матрицу
 #
 def generate_slau(n):
-    a=np.zeros((n))
+    a=np.zeros((n-1))
     h=1./n
+    for i in range(2, n):
+        a[i-1]=p(i*h)
+    b=np.zeros((n-1))
     for i in range(1, n):
-        a[i]=-p(i*h)
-    b=np.zeros((n))
-    for i in range(n):
-        b[i]=p(i*h)+p((i+1)*h)+h*h*g(i*h)
+        b[i-1]=(p(i*h)+p((i+1)*h)+h*h*g(i*h))
 
-    c=np.zeros((n))
-    for i in range(n-1):
-        c[i]=-p((i+1)*h)
+    c=np.zeros((n-1))
+    for i in range(1,n-1):
+        c[i-1]=p((i+1)*h)
 
-    f=np.zeros((n))
-    for i in range(n):
-        f[i]=h*h*F(i*h)
+    f=np.zeros((n-1))
+    for i in range(1,n):
+        f[i-1]=-h*h*F(i*h)
     return a,b,c,f
 
 
@@ -37,13 +37,13 @@ def generate_slau(n):
 #проверяем, является ли наша матрица матрицей с диагональным преобладанием
 #
 def check_diag_domination(a, b, c):
-    if c[0]>=b[0]:
+    if math.fabs(c[0])>=math.fabs(b[0]):
         return False
     n=b.size
-    if a[n-1]>=b[n-1]:
+    if math.fabs(a[n-1])>=math.fabs(b[n-1]):
         return False
     for i in range(1, n-1):
-        if(a[i]+c[i]>=b[i]):
+        if(math.fabs(a[i])+math.fabs(c[i])>=math.fabs(b[i])):
             return False
     return True
 #
@@ -78,18 +78,38 @@ def sweep_method(a, b, c, f):
         #print i, i+1
         x[i]=p[i+1]*x[i+1]+q[i+1]
     return x
+#
+#Для сравнения правильности вычислений надо убедиться, что u_i отличается от y_i не более чем на O(h^2)
+#
+def compare_u_and_y(y):
+    n=y.size+1
+    h=1./n
+    print 'h =', h
+    for i in range(1, n):
+        print u(i*h), y[i-1], math.fabs(u(i*h)-y[i-1])
+
+def yacobi_method(a,f):
+    #TODO:
+    return 0
+
+def relax_method(a, f, w):
+    #TODO:
+    return 0
 
 def main():
-    n=3
+    n=10
     a,b,c,f=generate_slau(n)
-    for i in range(n):
+    for i in range(n-1):
         print a[i], b[i], c[i], f[i]
     print check_diag_domination(a,b,c)
     x=sweep_method(a,b,c,f)
     print x
     print 'result:'
     print_result(a,b,c,f,x)
+    print 'compare'
+    compare_u_and_y(x)
    # print check_diag_domination(a, b, c)
+
 
 
 if __name__=="__main__":
