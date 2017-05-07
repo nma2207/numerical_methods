@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 eps = 1e-06
-int_eps = 1e-30
+int_eps = 1e-4
 
 
 def f(x, eps):
@@ -69,7 +69,7 @@ def integral_left_rect(a, b, x):
         s=0
         h = float(b - a) / N
         for i in range(N):
-            s += c(x, a + i * h)*h
+            s += c( a + i * h)*h
         #s *= h
         if (math.fabs(s - s_prev) < int_eps):
             break
@@ -87,7 +87,7 @@ def integral_trapezoid(a, b, x):
         s=0
         h = float(b - a) / N
         for i in range(N):
-            s += (c(x, a + i * h) + c(x, a + (i + 1) * h))
+            s += (c(a + i * h) + c(a + (i + 1) * h))
         s *= (h / 2.)
         if (math.fabs(s - s_prev) < int_eps):
             break
@@ -105,7 +105,7 @@ def integral_simpson(a, b, x):
         s=0
         h = float(b - a) / N
         for i in range(N):
-            s += (c(x, a + i * h) + 4*c(x, a + (i + 0.5) * h) + c(x, a + (i + 1) * h))
+            s += (c(a + i * h) + 4*c(a + (i + 0.5) * h) + c(a + (i + 1) * h))
         s *= (h / 6.)
         if (math.fabs(s - s_prev) < int_eps):
             break
@@ -229,22 +229,21 @@ def test():
 
 def test_int():
     a = 0
-    b = 3
+    b = 1.5
     n=10
     h=float(b-a)/n
     for i in range(n+1):
         x=a+i*h
-        left=integral_left_rect(0,math.pi,x)
-        trap=integral_trapezoid(0,math.pi,x)
-        simp=integral_simpson(0,math.pi,x)
+        left=integral_simpson(0,x,x)
+        trap=integral_trapezoid(0,x,x)
+        simp=integral_simpson(0,x,x)
         f_r=f(x, eps)
-        print 'x=',x
         print 'Left rect: ', left
         print 'Trapezoid: ', trap
         print 'Simpson:   ',simp
         print 'real val:  ',f_r
 
-def test_error():
+def main():
     a=0
     b=1.5
     n=10
@@ -274,4 +273,4 @@ def test_error():
     #h_arr1.append(h1)
 
 if __name__ == "__main__":
-   main()
+    main()
